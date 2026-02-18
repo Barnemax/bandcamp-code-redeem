@@ -1,0 +1,9 @@
+{
+  "outputDirectory": ".",
+  "crons": [
+    {
+      "path": "/api/renew-watch",
+      "schedule": "0 0 */6 * *"
+    }
+  ]
+}

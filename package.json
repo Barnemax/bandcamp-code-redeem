@@ -1,0 +1,42 @@
+{
+    "name": "bandcamp-code-redeem",
+    "version": "1.0.0",
+    "description": "Monitors Gmail for Bandcamp download code emails and redeems them automatically.",
+    "type": "module",
+    "scripts": {
+        "dev": "vercel dev",
+        "build": "tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "eslint src/ api/ scripts/",
+        "lint:fix": "eslint src/ api/ scripts/ --fix",
+        "setup:oauth": "tsx --env-file=.env.local scripts/setup-oauth.ts",
+        "setup:watch": "tsx --env-file=.env.local scripts/setup-watch.ts",
+        "test:redeem": "tsx --env-file=.env.local scripts/test-redeem.ts"
+    },
+    "dependencies": {
+        "cheerio": "^1.0.0",
+        "googleapis": "^144.0.0",
+        "zod": "^4.0.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@types/node": "^22.13.0",
+        "@vercel/node": "^5.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.56.0",
+        "@typescript-eslint/parser": "^8.56.0",
+        "eslint": "^10.0.0",
+        "tsx": "^4.19.0",
+        "typescript": "^5.7.0",
+        "typescript-eslint": "^8.56.0",
+        "vercel": "^41.0.0",
+        "vitest": "^3.0.0"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "packageManager": "pnpm@9.15.4",
+    "pnpm": {
+        "ignoredBuiltDependencies": ["esbuild"]
+    }
+}
