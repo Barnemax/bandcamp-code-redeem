@@ -20,6 +20,7 @@
         "zod": "^4.0.0"
     },
     "devDependencies": {
+        "@barnemax/bandcamp-types": "^0.1.2",
         "@eslint/js": "^10.0.1",
         "@types/node": "^22.13.0",
         "@vercel/node": "^5.0.0",

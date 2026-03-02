@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import type { YumPageBlob } from '@barnemax/bandcamp-types';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
 
@@ -11,20 +12,8 @@ export interface RedemptionResult extends CodeEntry {
   error?: string;
 }
 
-interface BandcampApiParams {
-  is_corp: boolean;
-  band_id: number;
-  platform_closed: boolean;
-  hard_to_download: boolean;
-  fan_logged_in: boolean;
-  band_url: string;
-  was_logged_out: boolean | null;
-  is_https: boolean;
-  ref_url: string | null;
-}
-
 interface YumPageData {
-  apiParams: BandcampApiParams;
+  apiParams: YumPageBlob['api_params'];
   crumbs: Record<string, string>;
 }
 
@@ -77,15 +66,15 @@ async function getYumPageData(yumLink: string): Promise<YumPageData | null> {
     return null;
   }
 
-  let blob: Record<string, unknown>;
+  let blob: YumPageBlob;
   try {
-    blob = JSON.parse(blobRaw) as Record<string, unknown>;
+    blob = JSON.parse(blobRaw) as YumPageBlob;
   } catch {
     logger.warn('Failed to parse #pagedata[data-blob] as JSON', { yumLink });
     return null;
   }
 
-  const apiParams = blob['api_params'] as BandcampApiParams | undefined;
+  const apiParams = blob.api_params;
 
   // Crumbs live in <meta id="js-crumbs-data" data-crumbs="..."> as a JSON map keyed by API path.
   const crumbsRaw = $('#js-crumbs-data').attr('data-crumbs');

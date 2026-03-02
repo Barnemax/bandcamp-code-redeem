@@ -18,6 +18,9 @@ importers:
         specifier: ^4.0.0
         version: 4.3.6
     devDependencies:
+      '@barnemax/bandcamp-types':
+        specifier: ^0.1.2
+        version: 0.1.2
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.0.0)
@@ -53,6 +56,9 @@ importers:
         version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/node@22.19.11)(tsx@4.21.0)
 
 packages:
+
+  '@barnemax/bandcamp-types@0.1.2':
+    resolution: {integrity: sha512-LwC/MT+2O4X0/VyYdXZ39XWXJZNXuaB2UFd9vgN4O//lkOucqoEEbyznePz0sDz3MGjfS9+ygV3pD+YhoHS+Fw==}
 
   '@bytecodealliance/preview2-shim@0.17.6':
     resolution: {integrity: sha512-n3cM88gTen5980UOBAD6xDcNNL3ocTK8keab21bpx1ONdA+ARj7uD1qoFxOWCyKlkpSi195FH+GeAut7Oc6zZw==}
@@ -2331,6 +2337,8 @@ packages:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
+
+  '@barnemax/bandcamp-types@0.1.2': {}
 
   '@bytecodealliance/preview2-shim@0.17.6': {}
 
