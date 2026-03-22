@@ -149,6 +149,28 @@ pnpm test:redeem  # manually test a single redemption (edit the script first)
 
 ---
 
+## Renewing the Gmail watch (every 7 days)
+
+Gmail push notifications expire after 7 days. A Vercel Cron job (`/api/renew-watch`, runs every 6 days) handles this automatically as long as `CRON_SECRET` is set in the Vercel dashboard.
+
+If the cron job missed a cycle, or you see emails no longer being processed, renew manually. This will likely fail with `invalid_grant` first — see below.
+
+### `invalid_grant` (happens almost every time)
+
+Google refresh tokens expire after roughly 7 days of inactivity or when the OAuth consent screen is set to "Testing" (tokens expire after 7 days regardless). Re-run the OAuth flow first:
+
+```bash
+pnpm setup:oauth
+```
+
+Copy the new `GOOGLE_REFRESH_TOKEN` into `.env.local`, then update `GOOGLE_REFRESH_TOKEN` in the Vercel dashboard. Then register the watch:
+
+```bash
+pnpm setup:watch
+```
+
+---
+
 ## Renewing the Bandcamp cookie
 
 The `identity` cookie expires periodically. When it does you'll see redemption failures in the logs. Refresh it by repeating step 7 and updating `BANDCAMP_IDENTITY_COOKIE` in the Vercel dashboard, then redeploy.
@@ -159,7 +181,8 @@ The `identity` cookie expires periodically. When it does you'll see redemption f
 
 | Symptom | Likely cause |
 |---|---|
-| Emails not processed | Pub/Sub subscription not pointing at the right URL, or Gmail watch expired (run `pnpm setup:watch` again) |
+| Emails not processed | Pub/Sub subscription not pointing at the right URL, or Gmail watch expired (run `pnpm setup:watch` again — likely needs `pnpm setup:oauth` first) |
+| `invalid_grant` when running any script | OAuth refresh token expired — run `pnpm setup:oauth`, update `GOOGLE_REFRESH_TOKEN` in `.env.local` and Vercel, then retry |
 | `Failed to GET yum page` (status 429) | Bandcamp rate limit — the code retries once automatically |
 | `Quota exceeded` in webhook logs | Gmail API QPM limit hit; the webhook returns 200 to stop Pub/Sub retries, the next email will catch up |
 | `Redemption result: invalid` | Code was already used by someone else before the email arrived |

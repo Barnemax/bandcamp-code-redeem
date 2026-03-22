@@ -15,29 +15,31 @@
         "test:redeem": "tsx --env-file=.env.local scripts/test-redeem.ts"
     },
     "dependencies": {
-        "cheerio": "^1.0.0",
+        "cheerio": "^1.2.0",
         "googleapis": "^144.0.0",
-        "zod": "^4.0.0"
+        "zod": "^4.3.6"
     },
     "devDependencies": {
-        "@barnemax/bandcamp-types": "^0.1.2",
+        "@barnemax/bandcamp-types": "^0.1.5",
         "@eslint/js": "^10.0.1",
-        "@types/node": "^22.13.0",
-        "@vercel/node": "^5.0.0",
-        "@typescript-eslint/eslint-plugin": "^8.56.0",
-        "@typescript-eslint/parser": "^8.56.0",
-        "eslint": "^10.0.0",
-        "tsx": "^4.19.0",
-        "typescript": "^5.7.0",
-        "typescript-eslint": "^8.56.0",
-        "vercel": "^41.0.0",
-        "vitest": "^3.0.0"
+        "@types/node": "^22.19.15",
+        "@typescript-eslint/eslint-plugin": "^8.57.1",
+        "@typescript-eslint/parser": "^8.57.1",
+        "@vercel/node": "^5.6.18",
+        "eslint": "^10.1.0",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.57.1",
+        "vercel": "^41.7.8",
+        "vitest": "^3.2.4"
     },
     "engines": {
         "node": ">=20.0.0"
     },
     "packageManager": "pnpm@9.15.4",
     "pnpm": {
-        "ignoredBuiltDependencies": ["esbuild"]
+        "ignoredBuiltDependencies": [
+            "esbuild"
+        ]
     }
 }
