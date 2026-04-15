@@ -13,6 +13,7 @@ export async function concurrentMap<T, R>(
 
   async function worker(): Promise<void> {
     while (next < items.length) {
+      // Safe: `next++` is synchronous, so no two workers can claim the same index.
       const i = next++;
       results[i] = await fn(items[i]!);
     }

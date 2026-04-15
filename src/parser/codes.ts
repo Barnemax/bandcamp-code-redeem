@@ -39,11 +39,15 @@ export function extractCodes(message: gmail_v1.Schema$Message): CodeEntry[] {
 
   if (yumLinks.length === 0) return [];
 
-  // Find all codes and their positions in the raw HTML.
+  // Find all codes and their positions in the raw HTML, ignoring matches
+  // inside HTML tags (e.g. "data-blob", "base-url2") to avoid false positives.
   const codeMatches: Array<{ code: string; pos: number }> = [];
   let m: RegExpExecArray | null;
   const re = new RegExp(CODE_RE.source, 'g');
   while ((m = re.exec(html)) !== null) {
+    const before = html.lastIndexOf('<', m.index);
+    const closeBefore = html.lastIndexOf('>', m.index);
+    if (before !== -1 && before > closeBefore) continue; // inside a tag
     codeMatches.push({ code: m[0], pos: m.index });
   }
 

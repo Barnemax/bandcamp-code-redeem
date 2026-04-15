@@ -1,7 +1,8 @@
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 import type { YumPageBlob } from '@barnemax/bandcamp-types';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
+import { concurrentMap } from '../utils/concurrent.js';
 
 import type { CodeEntry } from '../parser/codes.js';
 
@@ -58,7 +59,7 @@ async function getYumPageData(yumLink: string): Promise<YumPageData | null> {
   }
 
   const html = await res.text();
-  const $ = cheerio.load(html);
+  const $ = load(html);
   const blobRaw = $('#pagedata').attr('data-blob');
 
   if (!blobRaw) {
@@ -173,9 +174,10 @@ export async function redeemCode(entry: CodeEntry): Promise<RedemptionResult> {
 export async function redeemAll(entries: CodeEntry[]): Promise<RedemptionResult[]> {
   // Fetch each unique yumLink once — multiple codes from the same release share page data.
   const uniqueLinks = [...new Set(entries.map((e) => e.yumLink))];
+  const pageDataResults = await concurrentMap(uniqueLinks, 3, getYumPageData);
   const pageDataMap = new Map<string, YumPageData | null>();
-  for (const link of uniqueLinks) {
-    pageDataMap.set(link, await getYumPageData(link));
+  for (let i = 0; i < uniqueLinks.length; i++) {
+    pageDataMap.set(uniqueLinks[i]!, pageDataResults[i]!);
   }
 
   // Per release: try codes sequentially and stop as soon as one succeeds.
