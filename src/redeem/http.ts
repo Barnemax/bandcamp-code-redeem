@@ -29,12 +29,15 @@ const MAX_RETRY_DELAY_MS = 10_000;
  *  (capped at 10 s) then tries once more. */
 async function retryOn429(call: () => Promise<Response>): Promise<Response> {
   const res = await call();
-  if (res.status !== 429) return res;
+  if (res.status !== 429) {
+    return res;
+  }
   const parsed = parseFloat(res.headers.get('Retry-After') ?? '');
   const delayMs = Number.isFinite(parsed)
     ? Math.min(parsed * 1_000, MAX_RETRY_DELAY_MS)
     : DEFAULT_RETRY_DELAY_MS;
   await new Promise((resolve) => setTimeout(resolve, delayMs));
+
   return call();
 }
 
@@ -54,7 +57,8 @@ async function getYumPageData(yumLink: string): Promise<YumPageData | null> {
     }),
   );
   if (!res.ok) {
-    logger.warn('Failed to GET yum page', { yumLink, status: res.status });
+    logger.warn('Failed to GET yum page', { status: res.status, yumLink });
+
     return null;
   }
 
@@ -64,6 +68,7 @@ async function getYumPageData(yumLink: string): Promise<YumPageData | null> {
 
   if (!blobRaw) {
     logger.warn('No #pagedata[data-blob] found on yum page', { yumLink });
+
     return null;
   }
 
@@ -72,6 +77,7 @@ async function getYumPageData(yumLink: string): Promise<YumPageData | null> {
     blob = JSON.parse(blobRaw) as YumPageBlob;
   } catch {
     logger.warn('Failed to parse #pagedata[data-blob] as JSON', { yumLink });
+
     return null;
   }
 
@@ -90,11 +96,13 @@ async function getYumPageData(yumLink: string): Promise<YumPageData | null> {
 
   if (!apiParams) {
     logger.warn('Missing api_params in page data', { yumLink });
+
     return null;
   }
 
   if (!crumbs['api/codes/1/redeem']) {
     logger.warn('Missing redeem crumb in page data', { yumLink });
+
     return null;
   }
 
@@ -108,16 +116,16 @@ async function redeemCodeWithData(entry: CodeEntry, pageData: YumPageData): Prom
   const apiUrl = `${origin}/api/codes/1/redeem`;
 
   try {
-    const body = JSON.stringify({ ...apiParams, code, collection_add: true, mailing_list: false, crumb: crumbs['api/codes/1/redeem'] });
+    const body = JSON.stringify({ ...apiParams, code, collection_add: true, crumb: crumbs['api/codes/1/redeem'], mailing_list: false });
     const res = await retryOn429(() =>
       fetch(apiUrl, {
-        method: 'POST',
+        body,
         headers: bandcampHeaders({
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
           Referer: yumLink,
+          'X-Requested-With': 'XMLHttpRequest',
         }),
-        body,
+        method: 'POST',
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       }),
     );
@@ -130,8 +138,8 @@ async function redeemCodeWithData(entry: CodeEntry, pageData: YumPageData): Prom
     } catch {
       return {
         ...entry,
-        status: 'error',
         error: `Non-JSON response (HTTP ${res.status}): ${text.slice(0, 200)}`,
+        status: 'error',
       };
     }
 
@@ -144,30 +152,32 @@ async function redeemCodeWithData(entry: CodeEntry, pageData: YumPageData): Prom
       const reason = (errors[0] as Record<string, unknown>)['reason'];
       if (typeof reason === 'string') {
         if (reason === 'invalid.already_redeemed') {
-          return { ...entry, status: 'already_redeemed', error: reason };
+          return { ...entry, error: reason, status: 'already_redeemed' };
         }
         if (reason.startsWith('invalid.')) {
-          return { ...entry, status: 'invalid', error: reason };
+          return { ...entry, error: reason, status: 'invalid' };
         }
       }
     }
 
     return {
       ...entry,
-      status: 'error',
       error: `Unexpected response: ${text.slice(0, 200)}`,
+      status: 'error',
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return { ...entry, status: 'error', error: message };
+
+    return { ...entry, error: message, status: 'error' };
   }
 }
 
 export async function redeemCode(entry: CodeEntry): Promise<RedemptionResult> {
   const pageData = await getYumPageData(entry.yumLink);
   if (!pageData) {
-    return { ...entry, status: 'error', error: 'Could not extract page data from yum page' };
+    return { ...entry, error: 'Could not extract page data from yum page', status: 'error' };
   }
+
   return redeemCodeWithData(entry, pageData);
 }
 
@@ -190,7 +200,7 @@ export async function redeemAll(entries: CodeEntry[]): Promise<RedemptionResult[
 
     if (!pageData) {
       for (const entry of codesForLink) {
-        results.push({ ...entry, status: 'error', error: 'Could not extract page data from yum page' });
+        results.push({ ...entry, error: 'Could not extract page data from yum page', status: 'error' });
       }
       continue;
     }

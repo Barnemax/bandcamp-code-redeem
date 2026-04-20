@@ -17,7 +17,7 @@ if (!yumLink || !code) {
   process.exit(1);
 }
 
-const result = await redeemCode({ yumLink, code });
+const result = await redeemCode({ code, yumLink });
 console.log(JSON.stringify(result, null, 2));
 
 if (result.status !== 'redeemed') {

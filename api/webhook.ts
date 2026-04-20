@@ -6,9 +6,14 @@ import { logger } from '../src/utils/logger.js';
 import { config } from '../src/utils/config.js';
 
 function isQuotaError(err: unknown): boolean {
-  if (!(err instanceof Error)) return false;
+  if (!(err instanceof Error)) {
+    return false;
+  }
   const status = (err as unknown as Record<string, unknown>)['status'];
-  if (status === 429) return true;
+  if (status === 429) {
+    return true;
+  }
+
   return (
     err.message.includes('Quota exceeded') ||
     err.message.includes('rateLimitExceeded') ||
@@ -19,12 +24,14 @@ function isQuotaError(err: unknown): boolean {
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   if (req.method !== 'POST') {
     res.status(405).end();
+
     return;
   }
 
   if (req.query['token'] !== config.WEBHOOK_SECRET) {
     logger.warn('Rejected webhook — bad token');
     res.status(403).end();
+
     return;
   }
 
@@ -45,7 +52,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
           // Omit the gift code itself from log lines — it's single-use but still sensitive.
           const { code: _code, ...logResult } = result;
           logger.info('Redemption result', { messageId, ...logResult });
-          if (result.status === 'redeemed') totalRedeemed++;
+          if (result.status === 'redeemed') {
+            totalRedeemed++;
+          }
         }
       } else {
         logger.debug('No codes found in message', { messageId });
@@ -62,6 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
       // Return 200 to stop Pub/Sub from retrying — retries would only make quota worse.
       // The next push notification (any email) will re-process all unread Bandcamp messages.
       res.status(200).json({ error: message, skipped: 'quota_exceeded' });
+
       return;
     }
     // Return 500 so Pub/Sub retries with backoff.

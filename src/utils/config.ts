@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
 const schema = z.object({
-  GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_CLIENT_SECRET: z.string(),
-  GOOGLE_REFRESH_TOKEN: z.string(),
-  GMAIL_USER_EMAIL: z.email(),
   BANDCAMP_IDENTITY_COOKIE: z.string(),
-  WEBHOOK_SECRET: z.string().min(32, 'WEBHOOK_SECRET must be at least 32 characters'),
   // Only required for setup scripts and the renew-watch endpoint
   GCP_PROJECT_ID: z.string().optional(),
   GMAIL_PUBSUB_TOPIC: z.string().optional(),
+  GMAIL_USER_EMAIL: z.email(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_REFRESH_TOKEN: z.string(),
+  WEBHOOK_SECRET: z.string().min(32, 'WEBHOOK_SECRET must be at least 32 characters'),
 });
 
 const result = schema.safeParse(process.env);
@@ -29,8 +29,8 @@ Object.defineProperty(parsed, 'toJSON', {
   value: () => ({
     ...parsed,
     BANDCAMP_IDENTITY_COOKIE: '[REDACTED]',
-    GOOGLE_REFRESH_TOKEN: '[REDACTED]',
     GOOGLE_CLIENT_SECRET: '[REDACTED]',
+    GOOGLE_REFRESH_TOKEN: '[REDACTED]',
   }),
 });
 

@@ -28,8 +28,8 @@ const oauth2Client = new google.auth.OAuth2(
 
 const authUrl = oauth2Client.generateAuthUrl({
   access_type: 'offline',
-  scope: ['https://www.googleapis.com/auth/gmail.modify'],
   prompt: 'consent', // Ensures a refresh token is always returned
+  scope: ['https://www.googleapis.com/auth/gmail.modify'],
 });
 
 console.log('\nOpen this URL in your browser:\n');
@@ -40,6 +40,7 @@ async function handleCallback(req: http.IncomingMessage, res: http.ServerRespons
   const parsed = new URL(req.url ?? '/', 'http://localhost:3000');
   if (parsed.pathname !== '/oauth/callback') {
     res.end('Not found');
+
     return;
   }
 
@@ -47,6 +48,7 @@ async function handleCallback(req: http.IncomingMessage, res: http.ServerRespons
   if (!code) {
     res.end('Missing code');
     server.close();
+
     return;
   }
 

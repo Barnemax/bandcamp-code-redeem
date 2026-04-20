@@ -11,7 +11,7 @@ function log(level: Level, message: string, data?: Record<string, unknown>): voi
 
 export const logger = {
   debug: (message: string, data?: Record<string, unknown>): void => log('debug', message, data),
+  error: (message: string, data?: Record<string, unknown>): void => log('error', message, data),
   info:  (message: string, data?: Record<string, unknown>): void => log('info',  message, data),
   warn:  (message: string, data?: Record<string, unknown>): void => log('warn',  message, data),
-  error: (message: string, data?: Record<string, unknown>): void => log('error', message, data),
 };

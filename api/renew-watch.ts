@@ -10,15 +10,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   if (!cronSecret) {
     logger.error('CRON_SECRET is not set — refusing renew-watch');
     res.status(500).json({ error: 'CRON_SECRET not configured' });
+
     return;
   }
   if (req.headers['authorization'] !== `Bearer ${cronSecret}`) {
     res.status(401).end();
+
     return;
   }
 
   if (!config.GMAIL_PUBSUB_TOPIC) {
     res.status(500).json({ error: 'GMAIL_PUBSUB_TOPIC is not set' });
+
     return;
   }
 
@@ -26,17 +29,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     const gmail = getGmailClient();
 
     const watchRes = await gmail.users.watch({
-      userId: config.GMAIL_USER_EMAIL,
       requestBody: {
         labelIds: ['INBOX'],
         topicName: config.GMAIL_PUBSUB_TOPIC,
       },
+      userId: config.GMAIL_USER_EMAIL,
     });
 
     const expiry = new Date(Number(watchRes.data.expiration)).toISOString();
     logger.info('Gmail watch renewed', { expiry });
 
-    res.status(200).json({ ok: true, expiry });
+    res.status(200).json({ expiry, ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     logger.error('Failed to renew Gmail watch', { error: message });

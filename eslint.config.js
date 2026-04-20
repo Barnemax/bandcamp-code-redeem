@@ -14,6 +14,12 @@ export default tseslint.config(
         rules: {
             'indent': ['error', 2],
             'quotes': ['error', 'single'],
+            'brace-style': ['error', '1tbs', { allowSingleLine: false }],
+            'curly': ['error', 'all'],
+            'padding-line-between-statements': ['error',
+                { blankLine: 'always', prev: '*', next: 'return' },
+            ],
+            'sort-keys': ['error', 'asc', { caseSensitive: false, natural: true }],
             '@typescript-eslint/no-explicit-any': 'error',
             '@typescript-eslint/explicit-function-return-type': 'error',
             '@typescript-eslint/no-unused-vars': ['error', {

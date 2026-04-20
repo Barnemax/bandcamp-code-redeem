@@ -17,11 +17,11 @@ if (!config.GMAIL_PUBSUB_TOPIC) {
 const gmail = getGmailClient();
 
 const res = await gmail.users.watch({
-  userId: config.GMAIL_USER_EMAIL,
   requestBody: {
     labelIds: ['INBOX'],
     topicName: config.GMAIL_PUBSUB_TOPIC,
   },
+  userId: config.GMAIL_USER_EMAIL,
 });
 
 const expiry = new Date(Number(res.data.expiration)).toISOString();
